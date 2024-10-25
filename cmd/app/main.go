@@ -13,8 +13,7 @@ func main() {
 	mainLogger := logger.New("Sila")
 	ctx = context.WithValue(ctx, logger.LoggerKey, mainLogger)
 
-	postgresClient := postgres.New(os.Getenv("POSTGRES"))
-	_ = postgresClient
+	postgresClient := postgres.New(ctx, os.Getenv("POSTGRES"))
 
 	delivery.Start(postgresClient.DB, mainLogger)
 }

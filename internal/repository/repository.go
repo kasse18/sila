@@ -6,6 +6,7 @@ import (
 )
 
 type ContainerRepo interface {
-	GetAll(ctx context.Context, id int) (*models.Container, error)
+	GetAll(ctx context.Context) ([]models.Container, error)
 	Create(ctx context.Context, userCreate models.CreateContainer) (int, error)
+	UpdateContainer(ctx context.Context, user *models.Container) error
 }
