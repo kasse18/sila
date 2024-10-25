@@ -50,12 +50,3 @@ func (r *DB) CreateContainer(ctx context.Context, user *models.User) error {
 
 	return nil
 }
-
-func (r *DB) UpdateUser(ctx context.Context, user *models.User) error {
-	_, err := r.DB.ExecContext(ctx, updateUser, user.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
