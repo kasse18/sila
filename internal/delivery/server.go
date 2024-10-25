@@ -6,7 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"go-template/internal/delivery/handlers"
 	"go-template/internal/delivery/handlers/middleware"
-	"go-template/internal/repository/user"
+	"go-template/internal/repository/container"
 	"go-template/internal/service"
 	"go-template/pkg/logger"
 )
@@ -15,11 +15,11 @@ func Start(db *sqlx.DB, logger logger.Logger) {
 	r := gin.Default()
 	r.ForwardedByClientIP = true
 
-	containerRepo := user.InitUserRepo(db)
+	containerRepo := container.InitUserRepo(db)
 	containerService := service.InitContainerService(containerRepo, logger)
 	containerHandler := handlers.InitUserHandler(containerService)
 
-	userRouter := r.Group("/user")
+	userRouter := r.Group("/container")
 
 	userRouter.POST("/create", containerHandler.Create)
 	userRouter.GET("/get/:id", containerHandler.GetAll)

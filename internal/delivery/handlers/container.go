@@ -6,10 +6,10 @@ import (
 )
 
 type ContainerHandler struct {
-	service service.User
+	service service.Container
 }
 
-func InitUserHandler(userService service.User) ContainerHandler {
+func InitUserHandler(userService service.Container) ContainerHandler {
 	return ContainerHandler{
 		service: userService,
 	}
