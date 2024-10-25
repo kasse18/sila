@@ -43,7 +43,7 @@ func (r *DB) GetContainer(ctx context.Context, container *models.Container) erro
 }
 
 func (r *DB) CreateContainer(ctx context.Context, container *models.Container) error {
-	_, err := r.DB.ExecContext(ctx, insertContainer, container.ID, container.Name)
+	_, err := r.DB.ExecContext(ctx, insertContainer, container.ID, container.Name, container.LinkSmall, container.LinkBig)
 	if err != nil {
 		return err
 	}
