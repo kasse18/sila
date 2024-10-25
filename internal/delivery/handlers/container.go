@@ -3,9 +3,9 @@ package handlers
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"go-template/internal/models/models"
-	"go-template/internal/service"
 	"net/http"
+	"sila-app/internal/models/models"
+	"sila-app/internal/service"
 	"time"
 )
 

@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"go-template/internal/models/models"
+	"sila-app/internal/models/models"
 )
 
 type Container interface {

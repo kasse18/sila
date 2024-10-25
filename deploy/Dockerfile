@@ -1,27 +1,23 @@
-FROM golang:latest
+FROM golang:1.23.0-alpine AS builder
 
 WORKDIR /app
 
-# Copy go.mod and go.sum
-COPY go.mod go.sum ./
+COPY go.mod ./
+COPY go.sum ./
+
+RUN apk update && \
+    apk add build-base
 
 RUN go mod download
 
-# Set WORKDIR to cmd
-WORKDIR /app/cmd
+COPY ./ ./
 
-# List current directory contents
-RUN ls -R .
+RUN go build -o app /app/cmd/app/main.go
 
-# Copy the rest of the application
-COPY . .
+FROM alpine
 
-# Build and execute the Go binary
-RUN ls -R ./cmd/app/main.go && go build -o ./cmd/main ./cmd/app/main.go && ls -R ./cmd/main && chmod +x ./cmd/main || echo "Error building main.go"
+WORKDIR /app
 
-# Verify the contents of the cmd directory
-RUN ls -R /app/cmd
+COPY --from=builder /app/ /app/
 
-EXPOSE 8080
-
-CMD ["./cmd/main"]
+CMD [ "./app" ]

@@ -2,20 +2,18 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"go-template/pkg/logger"
+	"sila-app/pkg/logger"
 )
 
 type DB struct {
-	conn   *sql.Conn
 	logger *logger.Logger
 	DB     *sqlx.DB
 }
 
 func New(ctx context.Context, connStr string) *DB {
-	db, err := sql.Open("postgres", connStr)
+	db, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
 		panic(err)
 	}
@@ -31,6 +29,6 @@ func New(ctx context.Context, connStr string) *DB {
 	}
 
 	return &DB{
-		conn: conn,
+		DB: db,
 	}
 }

@@ -2,10 +2,11 @@ package container
 
 import (
 	"context"
+	"fmt"
 	"github.com/jmoiron/sqlx"
-	"go-template/internal/models/models"
-	"go-template/pkg/logger"
 	"go.uber.org/zap"
+	"sila-app/internal/models/models"
+	"sila-app/pkg/logger"
 )
 
 const (
@@ -19,23 +20,33 @@ type Container struct {
 	logger logger.Logger
 }
 
-func InitContainerRepo(db *sqlx.DB) *Container {
+func InitContainerRepo(db *sqlx.DB, logger *logger.Logger) *Container {
 	return &Container{
-		db: db,
+		db:     db,
+		logger: *logger,
 	}
 }
 
 func (c *Container) GetAll(ctx context.Context) ([]models.Container, error) {
+	c.logger.Info(ctx, "Starting GetAll operation")
 	out := []models.Container{}
-	rows, err := c.db.QueryContext(ctx, queryContainer)
+
+	err := c.db.PingContext(ctx)
 	if err != nil {
+		c.logger.Error(ctx, "Failed to connect to database", zap.Error(err))
+		return nil, fmt.Errorf("database connection failed: %w", err)
+	}
+
+	rows, err := c.db.QueryxContext(ctx, queryContainer)
+	if err != nil {
+		c.logger.Error(ctx, "Failed to execute query", zap.Error(err))
 		return nil, err
 	}
 
 	for rows.Next() {
 		temp := models.Container{}
 
-		if err := rows.Scan(&temp.ID, &temp.Name, &temp.DocumentID, &temp.LinkSmall, &temp.LinkBig); err != nil {
+		if err := rows.StructScan(&temp); err != nil {
 			c.logger.Error(ctx, "failed to scan row", zap.Error(err))
 			continue
 		}
@@ -54,9 +65,9 @@ func (c *Container) Create(ctx context.Context, containerCreate models.CreateCon
 	var id int
 
 	newContainer := models.CreateContainer{
-		containerCreate.Name,
-		containerCreate.LinkSmall,
-		containerCreate.LinkBig,
+		Name:      containerCreate.Name,
+		LinkSmall: containerCreate.LinkSmall,
+		LinkBig:   containerCreate.LinkBig,
 	}
 	row := c.db.QueryRowContext(ctx, insertContainer, newContainer.Name, newContainer.LinkSmall, newContainer.LinkBig)
 	err = row.Scan(&id)

@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"go-template/internal/delivery"
-	"go-template/pkg/db/postgres"
-	"go-template/pkg/logger"
 	"os"
+	"sila-app/internal/delivery"
+	"sila-app/pkg/db/postgres"
+	"sila-app/pkg/logger"
 )
 
 func main() {
@@ -15,5 +15,5 @@ func main() {
 
 	postgresClient := postgres.New(ctx, os.Getenv("POSTGRES"))
 
-	delivery.Start(postgresClient.DB, mainLogger)
+	delivery.Start(postgresClient.DB, &mainLogger)
 }

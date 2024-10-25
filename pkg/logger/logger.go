@@ -22,12 +22,12 @@ type logger struct {
 }
 
 func (l logger) Info(ctx context.Context, msg string, fields ...zap.Field) {
-	fields = append(fields, zap.String(ServiceName, l.serviceName), zap.String(RequestID, ctx.Value(RequestID).(string)))
+	fields = append(fields, zap.String(ServiceName, l.serviceName))
 	l.logger.Info(msg, fields...)
 }
 
 func (l logger) Error(ctx context.Context, msg string, fields ...zap.Field) {
-	fields = append(fields, zap.String(ServiceName, l.serviceName), zap.String(RequestID, ctx.Value(RequestID).(string)))
+	fields = append(fields, zap.String(ServiceName, l.serviceName))
 	l.logger.Error(msg, fields...)
 }
 

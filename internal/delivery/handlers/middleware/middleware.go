@@ -1,6 +1,6 @@
 package middleware
 
-import "go-template/pkg/logger"
+import "sila-app/pkg/logger"
 
 type Middleware struct {
 	logger *logger.Logger

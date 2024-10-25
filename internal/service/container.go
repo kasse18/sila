@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"go-template/internal/models/models"
-	"go-template/internal/repository"
-	"go-template/pkg/logger"
+	"sila-app/internal/models/models"
+	"sila-app/internal/repository"
+	"sila-app/pkg/logger"
 )
 
 type containerService struct {
@@ -12,10 +12,10 @@ type containerService struct {
 	logger        logger.Logger
 }
 
-func InitContainerService(containerRepo repository.ContainerRepo, logger logger.Logger) Container {
+func InitContainerService(containerRepo repository.ContainerRepo, logger *logger.Logger) Container {
 	return containerService{
 		containerRepo: containerRepo,
-		logger:        logger,
+		logger:        *logger,
 	}
 }
 
