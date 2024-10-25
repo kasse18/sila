@@ -32,8 +32,8 @@ type Client interface {
 	UpdateUser(ctx context.Context, user *models.User) error
 }
 
-func (r *DB) GetUser(ctx context.Context, user *models.User) error {
-	row := r.DB.QueryRowContext(ctx, queryUser, user.ID)
+func (r *DB) GetContainer(ctx context.Context, user *models.User) error {
+	row := r.DB.QueryRowContext(ctx, queryContainer, user.ID)
 
 	if err := row.Scan(&user.ID, &user.Username); err != nil {
 		return err
@@ -42,8 +42,8 @@ func (r *DB) GetUser(ctx context.Context, user *models.User) error {
 	return nil
 }
 
-func (r *DB) CreateUser(ctx context.Context, user *models.User) error {
-	_, err := r.DB.ExecContext(ctx, insertUser, user.ID, user.Username)
+func (r *DB) CreateContainer(ctx context.Context, user *models.User) error {
+	_, err := r.DB.ExecContext(ctx, insertContainer, user.ID, user.Username)
 	if err != nil {
 		return err
 	}
