@@ -10,7 +10,7 @@ import (
 
 const (
 	queryContainer  = "SELECT * FROM containers"
-	insertContainer = "INSERT INTO containers(id, name, link_small, link_big) values ($1, $2, $3, $4)"
+	insertContainer = "INSERT INTO containers(id, name, link_small, link_big) values ($1, $2, $3, $4) RETURNING id"
 	queryUpload     = "UPDATE containers SET document_id = $1"
 )
 
@@ -46,12 +46,35 @@ func (c *Container) GetAll(ctx context.Context) ([]models.Container, error) {
 	return out, nil
 }
 
-func (c *Container) Create(ctx context.Context, userCreate models.CreateContainer) (int, error) {
-	//TODO implement me
-	panic("implement me")
+func (c *Container) Create(ctx context.Context, containerCreate models.CreateContainer) (int, error) {
+	tx, err := c.db.BeginTxx(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+	var id int
+
+	newContainer := models.CreateContainer{
+		containerCreate.Name,
+		containerCreate.LinkSmall,
+		containerCreate.LinkBig,
+	}
+	row := c.db.QueryRowContext(ctx, insertContainer, newContainer.Name, newContainer.LinkSmall, newContainer.LinkBig)
+	err = row.Scan(&id)
+	if err != nil {
+		if rbErr := tx.Rollback(); rbErr != nil {
+			return 0, rbErr
+		}
+		return 0, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
-func (c *Container) UpdateContainer(ctx context.Context, user *models.Container) error {
+func (c *Container) UpdateContainer(ctx context.Context, container *models.Container) error {
 	//TODO implement me
+
 	panic("implement me")
 }
