@@ -15,7 +15,7 @@ func Start(db *sqlx.DB, logger logger.Logger) {
 	r := gin.Default()
 	r.ForwardedByClientIP = true
 
-	containerRepo := container.InitUserRepo(db)
+	containerRepo := container.InitContainerRepo(db)
 	containerService := service.InitContainerService(containerRepo, logger)
 	containerHandler := handlers.InitUserHandler(containerService)
 

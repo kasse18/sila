@@ -12,31 +12,26 @@ type containerService struct {
 	logger        logger.Logger
 }
 
-func InitContainerService(containerRepo repository.ContainerRepo, logger logger.Logger) User {
+func InitContainerService(containerRepo repository.ContainerRepo, logger logger.Logger) Container {
 	return containerService{
 		containerRepo: containerRepo,
 		logger:        logger,
 	}
 }
 
-func (c containerService) GetMe(ctx context.Context, id int) (*models.Container, error) {
-	container, err := c.containerRepo.Get(ctx, id)
+func (c containerService) Upload(ctx context.Context) (int, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (c containerService) GetAll(ctx context.Context, id int) (*models.Container, error) {
+	container, err := c.containerRepo.GetAll(ctx, id)
 	if err != nil {
 		c.logger.Error(ctx, err.Error())
 		return nil, err
 	}
 
 	return container, nil
-}
-
-func (c containerService) Delete(ctx context.Context, id int) error {
-	err := c.containerRepo.Delete(ctx, id)
-	if err != nil {
-		c.logger.Error(ctx, err.Error())
-		return err
-	}
-
-	return nil
 }
 
 func (c containerService) Create(ctx context.Context, container models.CreateContainer) (int, error) {
