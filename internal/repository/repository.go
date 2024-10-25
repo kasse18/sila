@@ -5,10 +5,10 @@ import (
 	"go-template/internal/models/models"
 )
 
-type UserRepo interface {
-	Get(ctx context.Context, id int) (*models.User, error)
+type ContainerRepo interface {
+	Get(ctx context.Context, id int) (*models.Container, error)
 	Delete(ctx context.Context, id int) error
-	Create(ctx context.Context, userCreate models.CreateUser) (int, error)
+	Create(ctx context.Context, userCreate models.CreateContainer) (int, error)
 	GetPwdByEmail(ctx context.Context, email string) (string, error)
 	GetIDByEmail(ctx context.Context, email string) (int, error)
 }

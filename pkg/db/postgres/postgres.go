@@ -27,23 +27,23 @@ func New(connStr string) *DB {
 }
 
 type Client interface {
-	GetUser(ctx context.Context, user *models.User) error
-	CreateUser(ctx context.Context, user *models.User) error
-	UpdateUser(ctx context.Context, user *models.User) error
+	GetContainer(ctx context.Context, user *models.Container) error
+	CreateContainer(ctx context.Context, user *models.Container) error
+	UpdateContainer(ctx context.Context, user *models.Container) error
 }
 
-func (r *DB) GetContainer(ctx context.Context, user *models.User) error {
-	row := r.DB.QueryRowContext(ctx, queryContainer, user.ID)
+func (r *DB) GetContainer(ctx context.Context, container *models.Container) error {
+	row := r.DB.QueryRowContext(ctx, queryContainer, container.ID)
 
-	if err := row.Scan(&user.ID, &user.Username); err != nil {
+	if err := row.Scan(&container.ID, &container.Name); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *DB) CreateContainer(ctx context.Context, user *models.User) error {
-	_, err := r.DB.ExecContext(ctx, insertContainer, user.ID, user.Username)
+func (r *DB) CreateContainer(ctx context.Context, container *models.Container) error {
+	_, err := r.DB.ExecContext(ctx, insertContainer, container.ID, container.Name)
 	if err != nil {
 		return err
 	}

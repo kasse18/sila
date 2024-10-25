@@ -15,16 +15,15 @@ func Start(db *sqlx.DB, logger logger.Logger) {
 	r := gin.Default()
 	r.ForwardedByClientIP = true
 
-	userRepo := user.InitUserRepo(db)
-	userService := service.InitUserService(userRepo, logger)
-	userHandler := handlers.InitUserHandler(userService)
+	containerRepo := user.InitUserRepo(db)
+	containerService := service.InitContainerService(containerRepo, logger)
+	containerHandler := handlers.InitUserHandler(containerService)
 
 	userRouter := r.Group("/user")
 
-	userRouter.POST("/create", userHandler.Create)
-	userRouter.GET("/get/:id", userHandler.GetUser)
-	userRouter.DELETE("/delete/:id", userHandler.Delete)
-	userRouter.POST("/login", userHandler.Login)
+	userRouter.POST("/create", containerHandler.Create)
+	userRouter.GET("/get/:id", containerHandler.GetAll)
+	userRouter.POST("/login", containerHandler.Login)
 
 	mdw := middleware.InitMiddleware(&logger)
 	r.Use(mdw.CORSMiddleware())

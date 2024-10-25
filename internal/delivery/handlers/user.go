@@ -5,28 +5,28 @@ import (
 	"go-template/internal/service"
 )
 
-type UserHandler struct {
+type ContainerHandler struct {
 	service service.User
 }
 
-func InitUserHandler(userService service.User) UserHandler {
-	return UserHandler{
+func InitUserHandler(userService service.User) ContainerHandler {
+	return ContainerHandler{
 		service: userService,
 	}
 }
 
-func (h UserHandler) Create(g *gin.Context) {
+func (h ContainerHandler) Create(g *gin.Context) {
 
 }
 
-func (h UserHandler) GetUser(g *gin.Context) {
+func (h ContainerHandler) GetAll(g *gin.Context) {
 
 }
 
-func (h UserHandler) Delete(g *gin.Context) {
+func (h ContainerHandler) Login(g *gin.Context) {
 
 }
 
-func (h UserHandler) Login(g *gin.Context) {
+func (h ContainerHandler) Upload(g *gin.Context) {
 
 }
