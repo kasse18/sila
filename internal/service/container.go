@@ -24,8 +24,8 @@ func (c containerService) Upload(ctx context.Context) (int, error) {
 	panic("implement me")
 }
 
-func (c containerService) GetAll(ctx context.Context, id int) (*models.Container, error) {
-	container, err := c.containerRepo.GetAll(ctx, id)
+func (c containerService) GetAll(ctx context.Context) ([]models.Container, error) {
+	container, err := c.containerRepo.GetAll(ctx)
 	if err != nil {
 		c.logger.Error(ctx, err.Error())
 		return nil, err

@@ -6,7 +6,6 @@ import (
 	"go-template/internal/models/models"
 	"go-template/internal/service"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -39,15 +38,9 @@ func (h ContainerHandler) Create(g *gin.Context) {
 }
 
 func (h ContainerHandler) GetAll(g *gin.Context) {
-	id := g.Query("id")
-	aid, err := strconv.Atoi(id)
-	if err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 	ctx := g.Request.Context()
 
-	containers, err := h.service.GetAll(ctx, aid)
+	containers, err := h.service.GetAll(ctx)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
