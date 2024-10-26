@@ -15,6 +15,9 @@ func Start(db *sqlx.DB, logger *logger.Logger) {
 	r := gin.Default()
 	r.ForwardedByClientIP = true
 
+	mdw := middleware.InitMiddleware(logger)
+	r.Use(mdw.CORSMiddleware())
+
 	containerRepo := repository.InitContainerRepo(db, logger)
 	containerService := service.InitContainerService(containerRepo, logger)
 	containerHandler := handlers.InitUserHandler(containerService)
@@ -25,9 +28,6 @@ func Start(db *sqlx.DB, logger *logger.Logger) {
 	userRouter.GET("/get_all_containers", containerHandler.GetAll)
 	userRouter.POST("/login", containerHandler.Login)
 	userRouter.POST("/upload", containerHandler.Upload)
-
-	mdw := middleware.InitMiddleware(logger)
-	r.Use(mdw.CORSMiddleware())
 
 	if err := r.Run("0.0.0.0:8080"); err != nil {
 		panic(fmt.Sprintf("error running client: %v", err.Error()))
