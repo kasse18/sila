@@ -12,7 +12,7 @@ import (
 const (
 	queryContainer  = "SELECT * FROM containers"
 	insertContainer = "INSERT INTO containers(name, link_small, link_big) values ($1, $2, $3) RETURNING id"
-	queryUpload     = "UPDATE containers SET document_id = $1"
+	queryUpload     = "UPDATE containers SET document_id = $1 WHERE id = $2"
 )
 
 type Container struct {
@@ -81,8 +81,32 @@ func (c *Container) Create(ctx context.Context, container models.CreateContainer
 	return nil
 }
 
-func (c *Container) UpdateContainer(ctx context.Context, container *models.Container) error {
-	//TODO implement me
+func (c *Container) Upload(ctx context.Context, documentID int64, containerID int64) (int64, error) {
+	tx, err := c.db.BeginTxx(ctx, nil)
+	if err != nil {
+		return 0, fmt.Errorf("failed to start transaction: %w", err)
+	}
+	defer tx.Rollback()
 
+	stmt, err := tx.Prepare(insertContainer)
+	if err != nil {
+		return 0, fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(documentID, containerID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to insert data: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return documentID, nil
+}
+
+func (c *Container) UpdateContainer(ctx context.Context, user *models.Container) error {
+	//TODO implement me
 	panic("implement me")
 }

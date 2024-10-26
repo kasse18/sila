@@ -23,6 +23,7 @@ func Start(db *sqlx.DB, logger *logger.Logger) {
 	userRouter.POST("/create_container", containerHandler.Create)
 	userRouter.GET("/get_all_containers", containerHandler.GetAll)
 	userRouter.POST("/login", containerHandler.Login)
+	userRouter.POST("/upload", containerHandler.Upload)
 
 	//mdw := middleware.InitMiddleware(&logger)
 	//r.Use(mdw.CORSMiddleware())

@@ -19,11 +19,6 @@ func InitContainerService(containerRepo repository.ContainerRepo, logger *logger
 	}
 }
 
-func (c containerService) Upload(ctx context.Context) (int, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (c containerService) GetAll(ctx context.Context) ([]models.Container, error) {
 	container, err := c.containerRepo.GetAll(ctx)
 	if err != nil {
@@ -42,6 +37,10 @@ func (c containerService) Create(ctx context.Context, container models.CreateCon
 	}
 
 	return nil
+}
+
+func (c containerService) Upload(ctx context.Context, documentID int64, containerID int64) (int, error) {
+	return 0, nil
 }
 
 func (c containerService) Login(ctx context.Context, user models.CreateContainer) (int, error) {

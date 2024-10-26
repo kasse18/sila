@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 	"sila-app/internal/models/models"
 	"sila-app/internal/service"
@@ -57,10 +59,67 @@ func (h ContainerHandler) GetAll(g *gin.Context) {
 	g.JSON(http.StatusOK, gin.H{"containers": containers})
 }
 
-func (h ContainerHandler) Login(g *gin.Context) {
+func (h ContainerHandler) Upload(g *gin.Context) {
+	containerID := g.Param("containerID")
+	if containerID == "" {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Container ID is required"})
+		return
+	}
 
+	file, _, err := g.Request.FormFile("file")
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file"})
+		return
+	}
+	defer file.Close()
+
+	url := "https://example-service-url.com/upload"
+
+	req, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+		return
+	}
+
+	req.Header.Set("Content-Type", "multipart/form-data")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request"})
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		g.JSON(http.StatusBadGateway, gin.H{"error": "Failed to upload file to external service"})
+		return
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
+		return
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(body, &result); err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response"})
+		return
+	}
+
+	id, ok := result["documentId"].(string)
+	if !ok {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get documentId from response"})
+		return
+	}
+
+	g.JSON(http.StatusOK, gin.H{
+		"message":    "File uploaded successfully",
+		"documentId": id,
+	})
 }
 
-func (h ContainerHandler) Upload(g *gin.Context) {
+func (h ContainerHandler) Login(g *gin.Context) {
 
 }
