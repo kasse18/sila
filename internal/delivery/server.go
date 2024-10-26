@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"sila-app/internal/delivery/handlers"
+	"sila-app/internal/delivery/handlers/middleware"
 	"sila-app/internal/repository/container"
 	"sila-app/internal/service/container"
 	"sila-app/pkg/logger"
@@ -25,8 +26,8 @@ func Start(db *sqlx.DB, logger *logger.Logger) {
 	userRouter.POST("/login", containerHandler.Login)
 	userRouter.POST("/upload", containerHandler.Upload)
 
-	//mdw := middleware.InitMiddleware(&logger)
-	//r.Use(mdw.CORSMiddleware())
+	mdw := middleware.InitMiddleware(logger)
+	r.Use(mdw.CORSMiddleware())
 
 	if err := r.Run("0.0.0.0:8080"); err != nil {
 		panic(fmt.Sprintf("error running client: %v", err.Error()))
