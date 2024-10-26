@@ -4,6 +4,7 @@ import (
 	"context"
 	"sila-app/internal/models/models"
 	"sila-app/internal/repository"
+	"sila-app/internal/service"
 	"sila-app/pkg/logger"
 )
 
@@ -12,7 +13,7 @@ type containerService struct {
 	logger        logger.Logger
 }
 
-func InitContainerService(containerRepo repository.ContainerRepo, logger *logger.Logger) Container {
+func InitContainerService(containerRepo repository.ContainerRepo, logger *logger.Logger) service.Container {
 	return containerService{
 		containerRepo: containerRepo,
 		logger:        *logger,

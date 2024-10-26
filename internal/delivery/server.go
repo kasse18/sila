@@ -6,7 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"sila-app/internal/delivery/handlers"
 	"sila-app/internal/repository/container"
-	"sila-app/internal/service"
+	"sila-app/internal/service/container"
 	"sila-app/pkg/logger"
 )
 
@@ -14,7 +14,7 @@ func Start(db *sqlx.DB, logger *logger.Logger) {
 	r := gin.Default()
 	r.ForwardedByClientIP = true
 
-	containerRepo := container.InitContainerRepo(db, logger)
+	containerRepo := repository.InitContainerRepo(db, logger)
 	containerService := service.InitContainerService(containerRepo, logger)
 	containerHandler := handlers.InitUserHandler(containerService)
 
