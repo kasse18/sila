@@ -2,7 +2,6 @@ package container
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
@@ -56,36 +55,23 @@ func (c *Container) GetAll(ctx context.Context) ([]models.Container, error) {
 	return out, nil
 }
 
-type CreateContainerRequest struct {
-	Name      string `json:"name"`
-	LinkSmall string `json:"linkSmall"`
-	LinkBig   string `json:"linkBig"`
-}
-
-func (c *Container) Create(ctx context.Context, jsonData []byte) error {
-	var container []CreateContainerRequest
-	err := json.Unmarshal(jsonData, &container)
-	if err != nil {
-		return fmt.Errorf("failed to unmarshal JSON: %w", err)
-	}
-
+func (c *Container) Create(ctx context.Context, container models.CreateContainer) error {
+	c.logger.Info(ctx, fmt.Sprintf("JSON unmarshalled %v", container))
 	tx, err := c.db.BeginTxx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
 	defer tx.Rollback()
 
-	for _, container := range container {
-		stmt, err := tx.Prepare(insertContainer)
-		if err != nil {
-			return fmt.Errorf("failed to prepare statement: %w", err)
-		}
-		defer stmt.Close()
+	stmt, err := tx.Prepare(insertContainer)
+	if err != nil {
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer stmt.Close()
 
-		_, err = stmt.Exec(container.Name, container.LinkSmall, container.LinkBig)
-		if err != nil {
-			return fmt.Errorf("failed to insert data: %w", err)
-		}
+	_, err = stmt.Exec(container.Name, container.LinkSmall, container.LinkBig)
+	if err != nil {
+		return fmt.Errorf("failed to insert data: %w", err)
 	}
 
 	if err := tx.Commit(); err != nil {

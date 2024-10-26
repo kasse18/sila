@@ -34,8 +34,14 @@ func (c containerService) GetAll(ctx context.Context) ([]models.Container, error
 	return container, nil
 }
 
-func (c containerService) Create(ctx context.Context, container models.CreateContainer) (int, error) {
-	return 0, nil
+func (c containerService) Create(ctx context.Context, container models.CreateContainer) error {
+	err := c.containerRepo.Create(ctx, container)
+	if err != nil {
+		c.logger.Error(ctx, err.Error())
+		return err
+	}
+
+	return nil
 }
 
 func (c containerService) Login(ctx context.Context, user models.CreateContainer) (int, error) {

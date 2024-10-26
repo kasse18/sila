@@ -21,20 +21,29 @@ func InitUserHandler(userService service.Container) ContainerHandler {
 
 func (h ContainerHandler) Create(g *gin.Context) {
 	var newContainer models.CreateContainer
-
-	if err := g.ShouldBind(&newContainer); err != nil {
+	if err := g.ShouldBindJSON(&newContainer); err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Создаем контекст с таймаутом
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	id, err := h.service.Create(ctx, newContainer)
+	// Вызываем сервис для создания контейнера
+	err := h.service.Create(ctx, newContainer)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		g.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to create container",
+			"details": err.Error(),
+		})
 		return
 	}
-	g.JSON(http.StatusOK, gin.H{"id": id})
+
+	// Отправляем успешный ответ
+	g.JSON(http.StatusOK, gin.H{
+		"message": "Container created successfully",
+	})
 }
 
 func (h ContainerHandler) GetAll(g *gin.Context) {

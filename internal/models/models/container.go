@@ -11,5 +11,5 @@ type Container struct {
 type CreateContainer struct {
 	Name      string `json:"name"`
 	LinkSmall string `json:"link_small"`
-	LinkBig   string `json:"link-big"`
+	LinkBig   string `json:"link_big"`
 }
