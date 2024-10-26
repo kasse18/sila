@@ -4,12 +4,10 @@ import (
 	"context"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"sila-app/pkg/logger"
 )
 
 type DB struct {
-	logger *logger.Logger
-	DB     *sqlx.DB
+	DB *sqlx.DB
 }
 
 func New(ctx context.Context, connStr string) *DB {

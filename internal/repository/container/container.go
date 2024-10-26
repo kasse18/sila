@@ -12,7 +12,7 @@ import (
 
 const (
 	queryContainer  = "SELECT * FROM containers"
-	insertContainer = "INSERT INTO containers(id, name, link_small, link_big) values ($1, $2, $3, $4) RETURNING id"
+	insertContainer = "INSERT INTO containers(name, link_small, link_big) values ($1, $2, $3) RETURNING id"
 	queryUpload     = "UPDATE containers SET document_id = $1"
 )
 
@@ -31,23 +31,21 @@ func InitContainerRepo(db *sqlx.DB, logger *logger.Logger) *Container {
 func (c *Container) GetAll(ctx context.Context) ([]models.Container, error) {
 	c.logger.Info(ctx, "Starting GetAll operation")
 	out := []models.Container{}
-
-	err := c.db.PingContext(ctx)
-	if err != nil {
+	// Проверка подключения к базе данных
+	if err := c.db.PingContext(ctx); err != nil {
 		c.logger.Error(ctx, "Failed to connect to database", zap.Error(err))
 		return nil, fmt.Errorf("database connection failed: %w", err)
 	}
 
-	rows, err := c.db.QueryxContext(ctx, queryContainer)
+	rows, err := c.db.QueryContext(ctx, queryContainer)
 	if err != nil {
 		c.logger.Error(ctx, "Failed to execute query", zap.Error(err))
 		return nil, err
 	}
-
 	for rows.Next() {
 		temp := models.Container{}
 
-		if err := rows.StructScan(&temp); err != nil {
+		if err := rows.Scan(&temp.ID, &temp.Name, &temp.DocumentID, &temp.LinkSmall, &temp.LinkBig); err != nil {
 			c.logger.Error(ctx, "failed to scan row", zap.Error(err))
 			continue
 		}
