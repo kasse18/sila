@@ -2,6 +2,7 @@ package container
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
@@ -57,31 +58,43 @@ func (c *Container) GetAll(ctx context.Context) ([]models.Container, error) {
 	return out, nil
 }
 
-func (c *Container) Create(ctx context.Context, containerCreate models.CreateContainer) (int, error) {
+type CreateContainerRequest struct {
+	Name      string `json:"name"`
+	LinkSmall string `json:"linkSmall"`
+	LinkBig   string `json:"linkBig"`
+}
+
+func (c *Container) Create(ctx context.Context, jsonData []byte) error {
+	var container []CreateContainerRequest
+	err := json.Unmarshal(jsonData, &container)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal JSON: %w", err)
+	}
+
 	tx, err := c.db.BeginTxx(ctx, nil)
 	if err != nil {
-		return 0, err
+		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	var id int
+	defer tx.Rollback()
 
-	newContainer := models.CreateContainer{
-		Name:      containerCreate.Name,
-		LinkSmall: containerCreate.LinkSmall,
-		LinkBig:   containerCreate.LinkBig,
-	}
-	row := c.db.QueryRowContext(ctx, insertContainer, newContainer.Name, newContainer.LinkSmall, newContainer.LinkBig)
-	err = row.Scan(&id)
-	if err != nil {
-		if rbErr := tx.Rollback(); rbErr != nil {
-			return 0, rbErr
+	for _, container := range container {
+		stmt, err := tx.Prepare(insertContainer)
+		if err != nil {
+			return fmt.Errorf("failed to prepare statement: %w", err)
 		}
-		return 0, err
+		defer stmt.Close()
+
+		_, err = stmt.Exec(container.Name, container.LinkSmall, container.LinkBig)
+		if err != nil {
+			return fmt.Errorf("failed to insert data: %w", err)
+		}
 	}
 
 	if err := tx.Commit(); err != nil {
-		return 0, err
+		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
-	return id, nil
+
+	return nil
 }
 
 func (c *Container) UpdateContainer(ctx context.Context, container *models.Container) error {
