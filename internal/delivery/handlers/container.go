@@ -77,7 +77,7 @@ func (h ContainerHandler) Upload(g *gin.Context) {
 
 	url := "http://194.67.84.96:8999//upload_doc"
 
-	req, err := http.NewRequest("POST", url, nil)
+	req, err := http.NewRequest("POST", url, file)
 	if err != nil {
 		g.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
 		return
