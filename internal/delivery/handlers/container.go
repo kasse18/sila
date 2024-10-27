@@ -75,7 +75,7 @@ func (h ContainerHandler) Upload(g *gin.Context) {
 	}
 	defer file.Close()
 
-	url := "https://example-service-url.com/upload"
+	url := "http://194.67.84.96:8999//upload_doc"
 
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
