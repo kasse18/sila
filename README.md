@@ -26,6 +26,8 @@ docker-compose up -d —build
 panic: dial tcp 172.19.0.2:5432: connect: connection refused
 
 https://github.com/TheTom205/cp-misis-chariot-rag/tree/main - ML
+
+https://github.com/vdmkkk/CP_CHARIOT - FRONTEND
 goroutine 1 [running]:
 sila-app/pkg/db/postgres.New({0xa841a8, 0xc0001ba510}, {0xc000028059?, 0xa7c5d0?})
         /app/pkg/db/postgres/postgres.go:16 +0xf4
